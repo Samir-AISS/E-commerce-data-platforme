@@ -16,13 +16,6 @@ A **production-grade data engineering pipeline** built on the [Olist Brazilian E
 
 ---
 
-
-(.venv) mac@192 ecommerce-data-platform % ls docs/images/
-airflow_dag.png
-costumer_analytics.png
-overview.png
-revenue_analysis.png
-revenue_satisfaction.png
 ## Dashboard
 
 <table>
@@ -39,6 +32,9 @@ revenue_satisfaction.png
 ---
 
 ## Airflow Pipeline
+
+6 sequential tasks running daily at 6h UTC — all green ✅
+
 ![Airflow DAG](docs/images/airflow_dag.png)
 
 | Task | Description |
@@ -49,6 +45,14 @@ revenue_satisfaction.png
 | `dbt_gold` | KPI aggregations & RFM segmentation |
 | `dbt_test` | dbt data quality tests |
 | `validate_data` | 12 custom validation checks |
+
+---
+
+## Cloud Infrastructure — Supabase
+
+PostgreSQL database hosted on Supabase (Frankfurt, EU) — stores all raw and transformed data accessible from Streamlit Cloud.
+
+![Supabase Dashboard](docs/images/supabase_dashboard.png)
 
 ---
 
