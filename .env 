@@ -1,0 +1,7 @@
+POSTGRES_USER=ecommerce
+POSTGRES_PASSWORD=ecommerce123
+POSTGRES_DB=ecommerce_db
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+DATABASE_URL=postgresql://ecommerce:ecommerce123@localhost:5432/ecommerce_db
+AIRFLOW_UID=50000

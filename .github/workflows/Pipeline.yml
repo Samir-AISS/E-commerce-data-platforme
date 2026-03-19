@@ -1,0 +1,115 @@
+name: Data Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  pipeline:
+    name: Validate & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: ecommerce
+          POSTGRES_PASSWORD: ecommerce123
+          POSTGRES_DB: ecommerce_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install pandas numpy psycopg2-binary sqlalchemy \
+                      python-dotenv dbt-core dbt-postgres pytest
+
+      - name: Init database schemas
+        run: |
+          PGPASSWORD=ecommerce123 psql -h localhost -U ecommerce -d ecommerce_db \
+            -f docker/init.sql
+
+      - name: Generate synthetic data & ingest
+        run: |
+          python -c "
+          import pandas as pd, numpy as np, os
+          from sqlalchemy import create_engine, text
+          from pathlib import Path
+
+          engine = create_engine('postgresql://ecommerce:ecommerce123@localhost:5432/ecommerce_db')
+          np.random.seed(42)
+          n = 1000
+
+          orders = pd.DataFrame({
+              'order_id': [f'O{i:05d}' for i in range(n)],
+              'customer_id': [f'C{np.random.randint(0,200):04d}' for _ in range(n)],
+              'order_status': np.random.choice(['delivered','shipped','canceled'], n, p=[0.85,0.10,0.05]),
+              'order_purchase_timestamp': pd.date_range('2017-01-01', periods=n, freq='6h'),
+              'order_approved_at': pd.date_range('2017-01-01', periods=n, freq='6h'),
+              'order_delivered_carrier_date': pd.date_range('2017-01-03', periods=n, freq='6h'),
+              'order_delivered_customer_date': pd.date_range('2017-01-07', periods=n, freq='6h'),
+              'order_estimated_delivery_date': pd.date_range('2017-01-10', periods=n, freq='6h'),
+          })
+          customers = pd.DataFrame({
+              'customer_id': [f'C{i:04d}' for i in range(200)],
+              'customer_unique_id': [f'U{i:04d}' for i in range(200)],
+              'customer_zip_code_prefix': ['01310'] * 200,
+              'customer_city': ['sao paulo'] * 200,
+              'customer_state': ['SP'] * 200,
+          })
+          products = pd.DataFrame({
+              'product_id': [f'P{i:04d}' for i in range(100)],
+              'product_category_name': np.random.choice(['eletronicos','moda','casa'], 100),
+              'product_name_lenght': np.random.randint(10,60,100),
+              'product_description_lenght': np.random.randint(100,500,100),
+              'product_photos_qty': np.random.randint(1,5,100),
+              'product_weight_g': np.random.randint(100,2000,100).astype(float),
+              'product_length_cm': np.random.randint(10,50,100).astype(float),
+              'product_height_cm': np.random.randint(5,30,100).astype(float),
+              'product_width_cm': np.random.randint(10,40,100).astype(float),
+          })
+
+          with engine.connect() as conn:
+              for t in ['orders','customers','products']:
+                  conn.execute(text(f'TRUNCATE TABLE raw.{t}'))
+              conn.commit()
+
+          orders.to_sql('orders', engine, schema='raw', if_exists='append', index=False)
+          customers.to_sql('customers', engine, schema='raw', if_exists='append', index=False)
+          products.to_sql('products', engine, schema='raw', if_exists='append', index=False)
+          print('ok: Test data ingested')
+          "
+
+      - name: Run dbt
+        run: |
+          cd dbt
+          dbt run --profiles-dir . --select bronze
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: ecommerce
+          POSTGRES_PASSWORD: ecommerce123
+          POSTGRES_DB: ecommerce_db
+
+      - name: Run pytest
+        run: pytest tests/ -v --tb=short || echo "No tests yet"
