@@ -98,7 +98,7 @@ jobs:
           orders.to_sql('orders', engine, schema='raw', if_exists='append', index=False)
           customers.to_sql('customers', engine, schema='raw', if_exists='append', index=False)
           products.to_sql('products', engine, schema='raw', if_exists='append', index=False)
-          print('ok: Test data ingested')
+          print('✅ Test data ingested')
           "
 
       - name: Run dbt
