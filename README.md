@@ -12,7 +12,40 @@
 
 A **production-grade data engineering pipeline** built on the [Olist Brazilian E-Commerce dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) — 100,000 real orders from 2016 to 2018. Covers end-to-end data engineering: ingestion, transformation, quality validation, cloud deployment, and BI dashboarding.
 
-**[Live Dashboard →](https://e-commerce-data-platforme-xprnlwq65rgewbymr6nn7h.streamlit.app/)** · [Architecture](docs/Architecture.md) · [Data Dictionary](docs/Data_dictionary.md) · [Pipeline Guide](docs/Pipeline.md) · [dbt Models](docs/Dbt_models.md)
+**[Live Dashboard →](https://e-commerce-data-platforme-xprnlwq65rgewbymr6nn7h.streamlit.app/)** · [Architecture](docs/architecture.md) · [Data Dictionary](docs/data_dictionary.md) · [Pipeline Guide](docs/pipeline.md) · [dbt Models](docs/dbt_models.md)
+
+---
+
+## Dashboard
+
+<table>
+  <tr>
+    <td><img src="docs/images/dashboard_overview.png" alt="Overview"/><br/><sub><b>Overview</b> — KPIs & Monthly Revenue</sub></td>
+    <td><img src="docs/images/revenue_analysis.png" alt="Revenue"/><br/><sub><b>Revenue Analysis</b> — Daily trends & seasonality</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/customer_analytics.png" alt="Customers"/><br/><sub><b>Customer Analytics</b> — RFM Segmentation</sub></td>
+    <td><img src="docs/images/reviews_satisfaction.png" alt="Reviews"/><br/><sub><b>Reviews & Satisfaction</b> — Sentiment analysis</sub></td>
+  </tr>
+</table>
+
+---
+
+## Airflow Pipeline
+
+6 sequential tasks running daily at 6h UTC — all green ✅
+
+![Airflow DAG](docs/images/airflow_dag.png)
+
+| Task | Description |
+|------|-------------|
+| `ingest_olist_to_postgres` | Load Olist CSVs → PostgreSQL raw schema |
+| `dbt_bronze` | Cleaning & type casting models |
+| `dbt_silver` | Enrichment & business logic models |
+| `dbt_gold` | KPI aggregations & RFM segmentation |
+| `dbt_test` | dbt data quality tests |
+| `validate_data` | 12 custom validation checks |
+
 ---
 
 ## Key Results
@@ -42,10 +75,8 @@ A **production-grade data engineering pipeline** built on the [Olist Brazilian E
 ┌─────────────────────────────────────────────────────────────┐
 │                    PostgreSQL / Supabase                      │
 │                      schema: raw                             │
-│  orders · customers · products · sellers                     │
-│  payments · reviews · order_items · geolocation             │
 └────────────────────────┬────────────────────────────────────┘
-                         │ dbt (Apache Airflow DAG)
+                         │ dbt (Apache Airflow DAG — daily 6h)
                          ▼
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
 │    Bronze    │→ │    Silver    │→ │     Gold     │
@@ -82,40 +113,30 @@ A **production-grade data engineering pipeline** built on the [Olist Brazilian E
 ```
 ecommerce-data-platform/
 ├── .github/workflows/
-│   └── pipeline.yml          # CI/CD — GitHub Actions
+│   └── Pipeline.yml          # CI/CD — GitHub Actions
 ├── dags/
 │   └── ecommerce_pipeline.py # Airflow DAG
 ├── dashboard/
 │   └── App.py                # Streamlit dashboard
-├── data/
-│   ├── raw/                  # Olist CSV files (gitignored)
-│   └── processed/
 ├── dbt/
-│   ├── dbt_project.yml
-│   ├── profiles.yml
 │   └── models/
 │       ├── bronze/           # 6 cleaning models
 │       ├── silver/           # 3 enrichment models
 │       └── gold/             # 3 KPI models
-├── docker/
-│   ├── init.sql              # PostgreSQL schema init
-│   └── Dockerfile.dashboard
 ├── docs/
+│   ├── images/               # Screenshots
 │   ├── architecture.md
 │   ├── data_dictionary.md
 │   ├── dbt_models.md
 │   └── pipeline.md
 ├── ingestion/
-│   ├── load_to_postgres.py   # CSV → PostgreSQL
-│   └── validate_data.py      # 12 quality checks
-├── results/
-│   └── precomputed.pkl       # Pre-computed dashboard data
+│   ├── load_to_postgres.py
+│   └── validate_data.py
 ├── scripts/
-│   ├── export_to_pkl.py      # Export DB → pkl
-│   └── migrate_to_supabase.py # Local → Supabase migration
+│   ├── export_to_pkl.py
+│   └── migrate_to_supabase.py
 ├── docker-compose.yml
-├── requirements.txt
-└── README.md
+└── requirements.txt
 ```
 
 ---
@@ -123,55 +144,18 @@ ecommerce-data-platform/
 ## Quick Start
 
 ```bash
-# 1. Clone
 git clone https://github.com/Samir-AISS/E-commerce-data-platforme.git
 cd E-commerce-data-platforme
-
-# 2. Environment
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-
-# 3. Download Olist data from Kaggle → data/raw/
-
-# 4. Start infrastructure
 docker-compose up -d
-
-# 5. Ingest data
 python ingestion/load_to_postgres.py
-
-# 6. Run dbt transformations
 cd dbt && dbt run --profiles-dir .
-
-# 7. Validate
 cd .. && python ingestion/validate_data.py
-
-# 8. Launch dashboard
 streamlit run dashboard/App.py
-# → http://localhost:8501
 ```
 
 Full setup guide → [docs/pipeline.md](docs/pipeline.md)
-
----
-
-## Dashboard Pages
-
-| Page | Description |
-|------|-------------|
-| Overview | Total orders, revenue, AOV, review score, cancel rate |
-| Revenue | Daily/monthly trends, day-of-week patterns |
-| Customers | RFM segmentation, state distribution |
-| Products | Category performance, review scores |
-| Reviews | Sentiment analysis, score distribution |
-
----
-
-## Dataset
-
-- **Source** : [Olist Brazilian E-Commerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) (Kaggle)
-- **Period** : September 2016 – October 2018
-- **Volume** : ~100,000 orders · 8 tables · ~500,000 rows total
-- **Anonymized** real commercial data from a Brazilian marketplace
 
 ---
 
