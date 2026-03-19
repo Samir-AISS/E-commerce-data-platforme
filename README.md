@@ -39,9 +39,6 @@ revenue_satisfaction.png
 ---
 
 ## Airflow Pipeline
-
-6 sequential tasks running daily at 6h UTC — all green ✅
-
 ![Airflow DAG](docs/images/airflow_dag.png)
 
 | Task | Description |
