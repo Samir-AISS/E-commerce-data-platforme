@@ -1,19 +1,22 @@
-![Pipeline](https://github.com/Samir-AISS/ecommerce-data-platform/actions/workflows/pipeline.yml/badge.svg)
-![Python](https://img.shields.io/badge/Python-3.11-blue)
-![dbt](https://img.shields.io/badge/dbt-1.7-orange)
-![Airflow](https://img.shields.io/badge/Airflow-2.8-green)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
-![Docker](https://img.shields.io/badge/Docker-Compose-blue)
+![Pipeline](https://github.com/Samir-AISS/E-commerce-data-platforme/actions/workflows/pipeline.yml/badge.svg)
+![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)
+![dbt](https://img.shields.io/badge/dbt-1.7-orange?logo=dbt&logoColor=white)
+![Airflow](https://img.shields.io/badge/Airflow-2.8-017CEE?logo=apacheairflow&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-live-ff4b4b?logo=streamlit&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-cloud-3ECF8E?logo=supabase&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 # E-Commerce Data Platform — Olist
 
-Production-grade data engineering pipeline built on the **Olist Brazilian E-Commerce dataset** (100K real orders, 2016–2018). Covers ingestion, transformation, quality validation, and BI dashboarding.
+A **production-grade data engineering pipeline** built on the [Olist Brazilian E-Commerce dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) — 100,000 real orders from 2016 to 2018. Covers end-to-end data engineering: ingestion, transformation, quality validation, cloud deployment, and BI dashboarding.
 
-**[Live Dashboard](http://localhost:8501)** · [Methodology](#architecture) · [Dataset](#dataset)
+**[Live Dashboard →](https://your-app.streamlit.app)** · [Architecture](docs/architecture.md) · [Data Dictionary](docs/data_dictionary.md) · [Pipeline Guide](docs/pipeline.md) · [dbt Models](docs/dbt_models.md)
 
 ---
 
-## Results
+## Key Results
 
 | Metric | Value |
 |--------|-------|
@@ -23,98 +26,161 @@ Production-grade data engineering pipeline built on the **Olist Brazilian E-Comm
 | Avg Review Score | 4.10 / 5 |
 | dbt Models | 12 (bronze/silver/gold) |
 | Validation Checks | 12 automated tests |
+| Late Delivery Rate | ~8% |
+| Cancel Rate | <1% |
 
 ---
 
 ## Architecture
 
 ```
-Olist CSV (8 files)
-        ↓
-Ingestion (Python + SQLAlchemy)
-        ↓
-PostgreSQL — schema raw
-        ↓  Airflow DAG (daily 6h)
-dbt Bronze → Silver → Gold
-        ↓
-Validation (12 checks)
-        ↓
-Streamlit Dashboard
+┌─────────────────────────────────────────────────────────────┐
+│                        DATA SOURCES                          │
+│         Olist CSV Files (8 tables, ~500K rows)              │
+└────────────────────────┬────────────────────────────────────┘
+                         │ Python + SQLAlchemy
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    PostgreSQL / Supabase                      │
+│                      schema: raw                             │
+│  orders · customers · products · sellers                     │
+│  payments · reviews · order_items · geolocation             │
+└────────────────────────┬────────────────────────────────────┘
+                         │ dbt (Apache Airflow DAG)
+                         ▼
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│    Bronze    │→ │    Silver    │→ │     Gold     │
+│   (views)    │  │   (tables)   │  │   (tables)   │
+│  Cleaning    │  │  Enrichment  │  │  KPIs & RFM  │
+└──────────────┘  └──────────────┘  └──────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│              Streamlit Dashboard (Supabase + pkl)            │
+│   Overview · Revenue · Customers · Products · Reviews        │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Stack
+## Tech Stack
 
-| Layer | Tool |
-|-------|------|
-| Orchestration | Apache Airflow 2.8 |
-| Transformation | dbt 1.7 (bronze/silver/gold) |
-| Storage | PostgreSQL 15 |
-| Quality | Custom validation (12 checks) |
-| Infrastructure | Docker Compose |
-| Dashboard | Streamlit |
-| CI/CD | GitHub Actions |
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| Ingestion | Python · SQLAlchemy · pandas | Load CSV → PostgreSQL |
+| Storage | PostgreSQL 15 · Supabase | Raw + transformed data |
+| Transformation | dbt 1.7 | Bronze → Silver → Gold models |
+| Orchestration | Apache Airflow 2.8 | Daily pipeline scheduling |
+| Quality | Custom validation (12 checks) | Data integrity tests |
+| Infrastructure | Docker Compose | Local environment |
+| Dashboard | Streamlit · Plotly | Interactive BI |
+| CI/CD | GitHub Actions | Automated testing |
 
 ---
 
-## dbt Models
+## Project Structure
 
-| Layer | Models | Description |
-|-------|--------|-------------|
-| Bronze | orders, customers, products, order_items, payments, reviews | Cleaning, casting, deduplication |
-| Silver | orders, customers, products | Enrichment, joins, business logic |
-| Gold | revenue_daily, customer_rfm, product_performance | KPIs, RFM segmentation, rankings |
+```
+ecommerce-data-platform/
+├── .github/workflows/
+│   └── pipeline.yml          # CI/CD — GitHub Actions
+├── dags/
+│   └── ecommerce_pipeline.py # Airflow DAG
+├── dashboard/
+│   └── App.py                # Streamlit dashboard
+├── data/
+│   ├── raw/                  # Olist CSV files (gitignored)
+│   └── processed/
+├── dbt/
+│   ├── dbt_project.yml
+│   ├── profiles.yml
+│   └── models/
+│       ├── bronze/           # 6 cleaning models
+│       ├── silver/           # 3 enrichment models
+│       └── gold/             # 3 KPI models
+├── docker/
+│   ├── init.sql              # PostgreSQL schema init
+│   └── Dockerfile.dashboard
+├── docs/
+│   ├── architecture.md
+│   ├── data_dictionary.md
+│   ├── dbt_models.md
+│   └── pipeline.md
+├── ingestion/
+│   ├── load_to_postgres.py   # CSV → PostgreSQL
+│   └── validate_data.py      # 12 quality checks
+├── results/
+│   └── precomputed.pkl       # Pre-computed dashboard data
+├── scripts/
+│   ├── export_to_pkl.py      # Export DB → pkl
+│   └── migrate_to_supabase.py # Local → Supabase migration
+├── docker-compose.yml
+├── requirements.txt
+└── README.md
+```
 
 ---
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/Samir-AISS/ecommerce-data-platform.git
-cd ecommerce-data-platform
+# 1. Clone
+git clone https://github.com/Samir-AISS/E-commerce-data-platforme.git
+cd E-commerce-data-platforme
 
-# Start infrastructure
-docker-compose up -d
-
-# Install dependencies
+# 2. Environment
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
-# Load Olist data (download from Kaggle first)
+# 3. Download Olist data from Kaggle → data/raw/
+
+# 4. Start infrastructure
+docker-compose up -d
+
+# 5. Ingest data
 python ingestion/load_to_postgres.py
 
-# Run dbt transformations
+# 6. Run dbt transformations
 cd dbt && dbt run --profiles-dir .
 
-# Validate data
+# 7. Validate
 cd .. && python ingestion/validate_data.py
 
-# Dashboard → http://localhost:8501
+# 8. Launch dashboard
+streamlit run dashboard/App.py
+# → http://localhost:8501
 ```
+
+Full setup guide → [docs/pipeline.md](docs/pipeline.md)
+
+---
+
+## Dashboard Pages
+
+| Page | Description |
+|------|-------------|
+| Overview | Total orders, revenue, AOV, review score, cancel rate |
+| Revenue | Daily/monthly trends, day-of-week patterns |
+| Customers | RFM segmentation, state distribution |
+| Products | Category performance, review scores |
+| Reviews | Sentiment analysis, score distribution |
 
 ---
 
 ## Dataset
 
-- **Source** : [Olist Brazilian E-Commerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
-- **100,000** real orders · 2016–2018
-- **8 tables** : orders, customers, products, sellers, payments, reviews, order_items, geolocation
-- **Anonymized** real commercial data
-
----
-
-## KPIs Tracked
-
-- Daily/monthly revenue & AOV
-- Customer RFM segmentation (Champions, Loyal, At Risk, Lost)
-- Product performance & category rankings
-- Review score distribution & sentiment
-- Late delivery rate & cancel rate
+- **Source** : [Olist Brazilian E-Commerce](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) (Kaggle)
+- **Period** : September 2016 – October 2018
+- **Volume** : ~100,000 orders · 8 tables · ~500,000 rows total
+- **Anonymized** real commercial data from a Brazilian marketplace
 
 ---
 
 ## Contact
 
-**Samir EL AISSAOUY** — Data Engineer / Analyst
+**Samir EL AISSAOUY** — Data Engineer / Data Analyst
 
-[LinkedIn](https://www.linkedin.com/in/samir-el-aissaouy) · Elaissaouy.samir12@gmail.com · Île-de-France
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-samir--el--aissaouy-blue?logo=linkedin)](https://www.linkedin.com/in/samir-el-aissaouy)
+[![Email](https://img.shields.io/badge/Email-elaissaouy.samir12%40gmail.com-red?logo=gmail)](mailto:elaissaouy.samir12@gmail.com)
+
+---
