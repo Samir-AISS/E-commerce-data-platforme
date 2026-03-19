@@ -1,4 +1,4 @@
-# Data Dictionary
+# data Dictionary
 
 ## Source Layer — `raw` schema
 
