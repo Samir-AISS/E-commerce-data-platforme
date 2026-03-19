@@ -12,7 +12,7 @@
 
 A **production-grade data engineering pipeline** built on the [Olist Brazilian E-Commerce dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) — 100,000 real orders from 2016 to 2018. Covers end-to-end data engineering: ingestion, transformation, quality validation, cloud deployment, and BI dashboarding.
 
-**[Live Dashboard →](https://your-app.streamlit.app)** · [Architecture](docs/architecture.md) · [Data Dictionary](docs/data_dictionary.md) · [Pipeline Guide](docs/pipeline.md) · [dbt Models](docs/dbt_models.md)
+**[Live Dashboard →](https://e-commerce-data-platforme-xprnlwq65rgewbymr6nn7h.streamlit.app/)** · [Architecture](docs/architecture.md) · [Data Dictionary](docs/data_dictionary.md) · [Pipeline Guide](docs/pipeline.md) · [dbt Models](docs/dbt_models.md)
 
 ---
 
