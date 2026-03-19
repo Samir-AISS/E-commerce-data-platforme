@@ -13,8 +13,8 @@ DEFAULT_ARGS = {
     "owner":            "ecommerce",
     "depends_on_past":  False,
     "start_date":       datetime(2024, 1, 1),
-    "retries":          2,
-    "retry_delay":      timedelta(minutes=5),
+    "retries":          1,
+    "retry_delay":      timedelta(minutes=2),
     "email_on_failure": False,
 }
 
@@ -29,32 +29,32 @@ with DAG(
 
     ingest = BashOperator(
         task_id="ingest_olist_to_postgres",
-        bash_command="python /opt/airflow/ingestion/load_to_postgres.py",
+        bash_command="cd /opt/airflow && python ingestion/load_to_postgres.py",
     )
 
     dbt_bronze = BashOperator(
         task_id="dbt_bronze",
-        bash_command="cd /opt/airflow && dbt run --select bronze --profiles-dir dbt --project-dir dbt",
+        bash_command="cd /opt/airflow/dbt && dbt run --select bronze --profiles-dir .",
     )
 
     dbt_silver = BashOperator(
         task_id="dbt_silver",
-        bash_command="cd /opt/airflow && dbt run --select silver --profiles-dir dbt --project-dir dbt",
+        bash_command="cd /opt/airflow/dbt && dbt run --select silver --profiles-dir .",
     )
 
     dbt_gold = BashOperator(
         task_id="dbt_gold",
-        bash_command="cd /opt/airflow && dbt run --select gold --profiles-dir dbt --project-dir dbt",
+        bash_command="cd /opt/airflow/dbt && dbt run --select gold --profiles-dir .",
     )
 
     dbt_test = BashOperator(
         task_id="dbt_test",
-        bash_command="cd /opt/airflow && dbt test --profiles-dir dbt --project-dir dbt",
+        bash_command="cd /opt/airflow/dbt && dbt test --profiles-dir .",
     )
 
     validate = BashOperator(
         task_id="validate_data",
-        bash_command="python /opt/airflow/ingestion/validate_data.py",
+        bash_command="cd /opt/airflow && python ingestion/validate_data.py",
     )
 
     ingest >> dbt_bronze >> dbt_silver >> dbt_gold >> dbt_test >> validate
