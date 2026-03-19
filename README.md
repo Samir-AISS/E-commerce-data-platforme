@@ -16,16 +16,23 @@ A **production-grade data engineering pipeline** built on the [Olist Brazilian E
 
 ---
 
+
+(.venv) mac@192 ecommerce-data-platform % ls docs/images/
+airflow_dag.png
+costumer_analytics.png
+overview.png
+revenue_analysis.png
+revenue_satisfaction.png
 ## Dashboard
 
 <table>
   <tr>
-    <td><img src="docs/images/dashboard_overview.png" alt="Overview"/><br/><sub><b>Overview</b> — KPIs & Monthly Revenue</sub></td>
+    <td><img src="docs/images/overview.png" alt="Overview"/><br/><sub><b>Overview</b> — KPIs & Monthly Revenue</sub></td>
     <td><img src="docs/images/revenue_analysis.png" alt="Revenue"/><br/><sub><b>Revenue Analysis</b> — Daily trends & seasonality</sub></td>
   </tr>
   <tr>
-    <td><img src="docs/images/customer_analytics.png" alt="Customers"/><br/><sub><b>Customer Analytics</b> — RFM Segmentation</sub></td>
-    <td><img src="docs/images/reviews_satisfaction.png" alt="Reviews"/><br/><sub><b>Reviews & Satisfaction</b> — Sentiment analysis</sub></td>
+    <td><img src="docs/images/costumer_analytics.png" alt="Customers"/><br/><sub><b>Customer Analytics</b> — RFM Segmentation</sub></td>
+    <td><img src="docs/images/revenue_satisfaction.png" alt="Reviews"/><br/><sub><b>Reviews & Satisfaction</b> — Sentiment analysis</sub></td>
   </tr>
 </table>
 
