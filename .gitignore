@@ -22,4 +22,15 @@ airflow.db
 
 # OS
 .DS_Store
-*.log
+*.log# Mac
+.DS_Store
+**/.DS_Store
+
+# dbt auto-generated
+dbt/.user.yml
+dbt/logs/
+dbt/target/
+
+# Python cache
+__pycache__/
+*.pyc
