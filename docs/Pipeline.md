@@ -85,14 +85,14 @@ python ingestion/load_to_postgres.py
 
 Expected output:
 ```
-✅ raw.orders                     99,441 rows
-✅ raw.order_items               112,650 rows
-✅ raw.customers                  99,441 rows
-✅ raw.products                   32,951 rows
-✅ raw.sellers                     3,095 rows
-✅ raw.payments                  103,886 rows
-✅ raw.reviews                    99,224 rows
-✅ raw.category_translation           71 rows
+ok raw.orders                     99,441 rows
+ok raw.order_items               112,650 rows
+ok raw.customers                  99,441 rows
+ok raw.products                   32,951 rows
+ok raw.sellers                     3,095 rows
+ok raw.payments                  103,886 rows
+ok raw.reviews                    99,224 rows
+ok raw.category_translation           71 rows
 ```
 
 ---
@@ -127,7 +127,7 @@ python ingestion/validate_data.py
 Expected output:
 ```
 12/12 checks passed
-✅ All validations passed
+All validations passed
 ```
 
 ---

@@ -50,9 +50,9 @@ def load():
 
         df.to_sql(table, engine, schema=schema,
                   if_exists="append", index=False, chunksize=5000)
-        print(f"  ✅ {schema}.{table:<25} {len(df):>7,} rows")
+        print(f"  ok : {schema}.{table:<25} {len(df):>7,} rows")
 
-    print("\n✅ Ingestion terminée")
+    print("\n Ingestion terminée")
 
 if __name__ == "__main__":
     load()
