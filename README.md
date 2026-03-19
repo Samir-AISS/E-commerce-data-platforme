@@ -1,3 +1,4 @@
+![Pipeline](https://github.com/Samir-AISS/E-commerce-data-platforme/actions/workflows/Pipeline.yml/badge.svg)
 ![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)
 ![dbt](https://img.shields.io/badge/dbt-1.7-orange?logo=dbt&logoColor=white)
 ![Airflow](https://img.shields.io/badge/Airflow-2.8-017CEE?logo=apacheairflow&logoColor=white)
