@@ -98,28 +98,9 @@ This project implements a modern data engineering stack to process the Olist Bra
 
 ## Data Flow
 
-```
-1. Download Olist CSVs from Kaggle
-        ↓
-2. load_to_postgres.py
-   → TRUNCATE + reload raw tables
-        ↓
-3. dbt run
-   → bronze views (cleaning)
-   → silver tables (enrichment)
-   → gold tables (KPIs)
-        ↓
-4. validate_data.py
-   → 12 checks: nulls, ranges, referential integrity
-        ↓
-5. export_to_pkl.py
-   → Query gold/silver tables
-   → Save to results/precomputed.pkl
-        ↓
-6. git push
-   → Streamlit Cloud auto-deploys
-   → Dashboard reads pkl
-```
+<p align="center">
+  <img src="images/Olist Data Pipeline-2026-03-21-170817.png" width="400" alt="Architecture"/>
+</p>
 
 ---
 
