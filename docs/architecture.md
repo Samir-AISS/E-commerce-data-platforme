@@ -99,7 +99,7 @@ This project implements a modern data engineering stack to process the Olist Bra
 ## Data Flow
 
 <p align="center">
-  <img src="images/Olist Data Pipeline-2026-03-21-171146.png" width="800" alt="Architecture"/>
+  <img src="images/Olist Data Pipeline-2026-03-21-171146.png" width="1000" alt="Architecture"/>
 </p>
 
 ---
