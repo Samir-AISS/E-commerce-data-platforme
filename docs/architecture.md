@@ -7,46 +7,10 @@ This project implements a modern data engineering stack to process the Olist Bra
 ---
 
 ## Architecture Diagram
+<p align="center">
+  <img src="images/Olist Data Pipeline-2026-03-21-170401.png" width="500" alt="Architecture"/>
+</p>
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  SOURCE LAYER                                                │
-│  8 CSV files from Olist (Kaggle)                            │
-│  orders · customers · products · sellers                     │
-│  payments · reviews · order_items · category_translation    │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-              Python + SQLAlchemy + pandas
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│  STORAGE LAYER                                               │
-│  PostgreSQL 15 (local Docker) + Supabase (cloud)            │
-│  Schema: raw                                                 │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-              Apache Airflow 2.8 (daily at 6h UTC)
-                         │
-                         ▼
-┌──────────────────────────────────────────────────────────────┐
-│  TRANSFORMATION LAYER — dbt 1.7                              │
-│                                                              │
-│  Bronze (views)     Silver (tables)     Gold (tables)        │
-│  ─────────────      ──────────────      ──────────────       │
-│  Cleaning           Enrichment          KPIs                 │
-│  Type casting       Business logic      RFM segments         │
-│  Deduplication      Cross-table joins   Rankings             │
-└────────────────────────┬─────────────────────────────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│  SERVING LAYER                                               │
-│  Streamlit Cloud + Supabase                                  │
-│  Fallback: precomputed.pkl                                   │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
 
 ## Key Technical Decisions
 
