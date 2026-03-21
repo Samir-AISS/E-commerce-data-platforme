@@ -8,7 +8,7 @@ This project implements a modern data engineering stack to process the Olist Bra
 
 ## Architecture Diagram
 <p align="center">
-  <img src="images/Olist Data Pipeline-2026-03-21-170401.png" width="500" alt="Architecture"/>
+  <img src="images/Olist Data Pipeline-2026-03-21-170401.png" width="400" alt="Architecture"/>
 </p>
 
 
