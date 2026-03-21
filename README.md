@@ -73,9 +73,8 @@ PostgreSQL database hosted on Supabase (Frankfurt, EU) — stores all raw and tr
 
 ## Architecture
 <p align="center">
-  <img src="docs/images/Olist%20Data%20Pipeline-2026-03-21-165300.png" width="500" alt="Architecture"/>
+  <img src="docs/images/Olist%20Data%20Pipeline-2026-03-21-165300.png" width="400" alt="Architecture"/>
 </p>
----
 
 ## Tech Stack
 
