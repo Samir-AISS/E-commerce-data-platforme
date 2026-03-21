@@ -72,9 +72,7 @@ PostgreSQL database hosted on Supabase (Frankfurt, EU) — stores all raw and tr
 ---
 
 ## Architecture
-## Architecture
-
-![Architecture](docs/images/Olist%20Data%20Pipeline-2026-03-21-165300.png)
+<img src="docs/images/Olist%20Data%20Pipeline-2026-03-21-165300.png" width="750" alt="Architecture"/>
 *End-to-end pipeline — from Olist CSV sources to Streamlit dashboard via PostgreSQL/Supabase and dbt Medallion layers.*
 
 ```
