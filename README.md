@@ -72,34 +72,7 @@ PostgreSQL database hosted on Supabase (Frankfurt, EU) — stores all raw and tr
 ---
 
 ## Architecture
-<img src="docs/images/Olist%20Data%20Pipeline-2026-03-21-165300.png" width="750" alt="Architecture"/>
-*End-to-end pipeline — from Olist CSV sources to Streamlit dashboard via PostgreSQL/Supabase and dbt Medallion layers.*
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        DATA SOURCES                          │
-│         Olist CSV Files (8 tables, ~500K rows)              │
-└────────────────────────┬────────────────────────────────────┘
-                         │ Python + SQLAlchemy
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    PostgreSQL / Supabase                      │
-│                      schema: raw                             │
-└────────────────────────┬────────────────────────────────────┘
-                         │ dbt (Apache Airflow DAG — daily 6h)
-                         ▼
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│    Bronze    │→ │    Silver    │→ │     Gold     │
-│   (views)    │  │   (tables)   │  │   (tables)   │
-│  Cleaning    │  │  Enrichment  │  │  KPIs & RFM  │
-└──────────────┘  └──────────────┘  └──────────────┘
-                         │
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│              Streamlit Dashboard (Supabase + pkl)            │
-│   Overview · Revenue · Customers · Products · Reviews        │
-└─────────────────────────────────────────────────────────────┘
-```
+<img src="docs/images/Olist%20Data%20Pipeline-2026-03-21-165300.png" width="600" alt="Architecture"/>
 
 ---
 
